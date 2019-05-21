@@ -1,0 +1,77 @@
+clear all;
+close all;
+
+
+[file,path] = uigetfile('M-Sequence.mat','Select the data file'); % select data file to load
+
+load([path file]);
+
+tns = ((0:Channel_2.NumPoints-1)*Channel_2.XInc + Channel_2.XOrg)*1e9;  % time in ns
+AmV = (double(Channel_2.Data)*Channel_2.YInc + Channel_2.YOrg)*1000;    % amplitude in mV
+
+
+
+N = size(AmV, 1);
+
+dtns_i = zeros(1, N);
+
+for i = 1:N - 1
+    dtns_i(i) = tns(i + 1) - tns(i);
+end
+
+dtns_avg = sum(dtns_i.')./ N;
+fs = 1./dtns_avg;
+
+AmV_freq = fft(AmV, N);
+
+freq = fs .* (0:N/2)./N;
+
+figure(1);
+plot(tns, AmV, 'LineWidth', 2);
+
+xlabel('time(nS)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('Signal(mVolt)', 'FontSize', 12, 'FontWeight', 'bold');
+title('Signal in Time Domain', 'FontSize', 12, 'FontWeight', 'bold');
+%legend({'Pulse', 'DUT'}, 'FontSize', 12, 'FontWeight', 'bold');
+
+%plot(tns, AmV);
+figure(2);
+plot(freq, abs(AmV_freq(1:N/2+1)), 'LineWidth', 2);
+grid on;
+
+xlabel('Frequencies(GHz)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('Signal(mVolt)', 'FontSize', 12, 'FontWeight', 'bold');
+title('Amplitude Spectrum M-Sequence Radar', 'FontSize', 12, 'FontWeight', 'bold');
+%legend({'Pulse', 'DUT'}, 'FontSize', 12, 'FontWeight', 'bold');
+
+
+%% Autocorrelation:
+
+[Autocorr, lags] = xcorr(AmV, AmV);
+
+figure(3);
+plot(lags.*dtns_avg, Autocorr, 'LineWidth', 2, 'color', [0.6350, 0.0780, 0.1840]);
+grid on;
+
+xlabel('time(nS)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('Autocorrelation', 'FontSize', 12, 'FontWeight', 'bold');
+title('Autocorrelation plot of the signal', 'FontSize', 12, 'FontWeight', 'bold');
+
+
+%% Ambiguity Plot
+
+freq_f = fs .* (-N/2:N/2-1)./N;
+AmV_freq_all = fftshift(fft(AmV));
+
+[Amb, Amb_freq] = meshgrid(Autocorr, abs(AmV_freq_all).^2);
+
+surf(lags.*dtns_avg, freq_f, Amb); shading flat;
+
+xlabel('time(nS)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('frequency(GHz)', 'FontSize', 12, 'FontWeight', 'bold');
+zlabel('Signal Ambiguity function', 'FontSize', 12, 'FontWeight', 'bold');
+title('Ambiguity funciton', 'FontSize', 12, 'FontWeight', 'bold');
+
+%figure;
+
+%contourf(lags.*dtns_avg, freq_f, Amb);
