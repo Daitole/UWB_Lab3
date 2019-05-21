@@ -63,15 +63,18 @@ title('Autocorrelation plot of the signal', 'FontSize', 12, 'FontWeight', 'bold'
 freq_f = fs .* (-N/2:N/2-1)./N;
 AmV_freq_all = fftshift(fft(AmV));
 
-[Amb, Amb_freq] = meshgrid(Autocorr, abs(AmV_freq_all).^2);
+%[Amb, Amb_freq] = meshgrid(Autocorr, abs(AmV_freq_all).^2);
 
-surf(lags.*dtns_avg, freq_f, Amb); shading flat;
+Amb = Autocorr * (abs(AmV_freq_all).^2./N).';
+figure(4);
+
+surf(lags.*dtns_avg, freq_f, Amb.'); shading flat;
 
 xlabel('time(nS)', 'FontSize', 12, 'FontWeight', 'bold');
 ylabel('frequency(GHz)', 'FontSize', 12, 'FontWeight', 'bold');
 zlabel('Signal Ambiguity function', 'FontSize', 12, 'FontWeight', 'bold');
 title('Ambiguity funciton', 'FontSize', 12, 'FontWeight', 'bold');
 
-%figure;
+figure;
 
-%contourf(lags.*dtns_avg, freq_f, Amb);
+contourf(lags.*dtns_avg, freq_f, Amb.');
