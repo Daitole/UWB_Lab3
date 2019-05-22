@@ -33,17 +33,19 @@ xlabel('time(nS)', 'FontSize', 12, 'FontWeight', 'bold');
 ylabel('Signal(mVolt)', 'FontSize', 12, 'FontWeight', 'bold');
 title('Signal in Time Domain', 'FontSize', 12, 'FontWeight', 'bold');
 %legend({'Pulse', 'DUT'}, 'FontSize', 12, 'FontWeight', 'bold');
+grid on;
+print('Signal', '-depsc');
 
 %plot(tns, AmV);
 figure(2);
-plot(freq, abs(AmV_freq(1:N/2+1)), 'LineWidth', 2);
+plot(freq, 0.5 .* db(abs(AmV_freq(1:N/2+1)).^2./N), 'LineWidth', 2);
 grid on;
 
 xlabel('Frequencies(GHz)', 'FontSize', 12, 'FontWeight', 'bold');
-ylabel('Signal(mVolt)', 'FontSize', 12, 'FontWeight', 'bold');
-title('Amplitude Spectrum M-Sequence Radar', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('P_{yy}(\mu Watt) [dB Scale]', 'FontSize', 12, 'FontWeight', 'bold');
+title('Power Spectrum M-Sequence Radar', 'FontSize', 12, 'FontWeight', 'bold');
 %legend({'Pulse', 'DUT'}, 'FontSize', 12, 'FontWeight', 'bold');
-
+print('Signal_f_db', '-depsc');
 
 %% Autocorrelation:
 
@@ -58,23 +60,15 @@ ylabel('Autocorrelation', 'FontSize', 12, 'FontWeight', 'bold');
 title('Autocorrelation plot of the signal', 'FontSize', 12, 'FontWeight', 'bold');
 
 
-%% Ambiguity Plot
+print('Signal_auto', '-depsc');
 
-freq_f = fs .* (-N/2:N/2-1)./N;
-AmV_freq_all = fftshift(fft(AmV));
 
-%[Amb, Amb_freq] = meshgrid(Autocorr, abs(AmV_freq_all).^2);
+%% ambiguity function:
 
-Amb = Autocorr * (abs(AmV_freq_all).^2./N).';
-figure(4);
+Fs = 1./(dtns_avg) .* 10^9;
 
-surf(lags.*dtns_avg, freq_f, Amb.'); shading flat;
+[afmag, delay, doppler] = ambgfun(AmV.', Fs, 1);
 
-xlabel('time(nS)', 'FontSize', 12, 'FontWeight', 'bold');
-ylabel('frequency(GHz)', 'FontSize', 12, 'FontWeight', 'bold');
-zlabel('Signal Ambiguity function', 'FontSize', 12, 'FontWeight', 'bold');
-title('Ambiguity funciton', 'FontSize', 12, 'FontWeight', 'bold');
+contour(delay, doppler, afmag);
 
-figure;
 
-contourf(lags.*dtns_avg, freq_f, Amb.');
