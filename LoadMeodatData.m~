@@ -15,7 +15,7 @@ PRF = 1/PRI;
 
 
 % read dataset 
-file='Fast2.0000000000';
+file='Slow.0000000000';
 
 [Ch1,Ch2] = ReadMeodat(file);
 
@@ -66,6 +66,7 @@ title(['Signal Received after background subtraction'], 'FontSize', 12, 'FontWei
 grid on;
 
 [v, Ind] = max(Ch1_new(:, 1));
+[v1, Ind_wall] = max(Ch1(:, 1));
 
 %Ch1_new_freq = fft(Ch1_win, [], 2);
 
@@ -99,8 +100,8 @@ figure(4);
 
 plot(SlowTime, Ch1_new(Ind, :), 'LineWidth', 2);
 
-xlabel('time(nS)', 'FontSize', 12, 'FontWeight', 'bold');
-ylabel('Breathing signal peak oveer slow time(mVolt)', 'FontSize', 12, 'FontWeight', 'bold');
+xlabel('Slow time(nS)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('Breathing signal(mVolt)', 'FontSize', 12, 'FontWeight', 'bold');
 title(['Breathing signal in time domain'], 'FontSize', 12, 'FontWeight', 'bold');
 
 grid on;
@@ -111,7 +112,7 @@ figure(5);
 
 surf(frequencies, range, abs(Ch1_new_freq)); view(2); shading flat;
 xlim([-2 2]);
-ylim([12 16]);
+%ylim([12 16]);
 caxis([0 0.02]);
 colormap(jet);
 
@@ -119,7 +120,7 @@ xlabel('Frequency of breathing (Hz)', 'FontSize', 12, 'FontWeight', 'bold');
 ylabel('Range [meters]', 'FontSize', 12, 'FontWeight', 'bold');
 title(['Range-Doppler plot in the case of fast breathing'], 'FontSize', 12, 'FontWeight', 'bold');
 colorbar;
-print('RD_fast', '-depsc');
+%print('RD_fast', '-depsc');
 
 
 frequencies_1 = PRF .* (0: NAscanCount/2)./NAscanCount;
@@ -160,4 +161,24 @@ grid on;
 % figure;
 % contour(delay, doppler, afmag)
 
+[Autocorr, lags] = xcorr(Ch1_new(Ind, :), Ch1_new(Ind, :));
 
+figure(11);
+plot(lags.*dt*10^9, Autocorr, 'LineWidth', 2, 'color', [0.6350, 0.0780, 0.1840]);
+grid on;
+
+xlabel('time delay(nS)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('Autocorrelation', 'FontSize', 12, 'FontWeight', 'bold');
+title('Autocorrelation plot of the signal', 'FontSize', 12, 'FontWeight', 'bold');
+
+[Autocorr_wall, lags] = xcorr(Ch1(Ind_wall, :), Ch1(Ind_wall, :));
+
+hold on;
+
+plot(lags.*dt*10^9, Autocorr_wall, 'LineWidth', 2, 'color', [0.6350, 0.0780, 0.1840]);
+grid on;
+
+xlabel('time delay(nS)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('Autocorrelation', 'FontSize', 12, 'FontWeight', 'bold');
+title('Autocorrelation plot of the signal', 'FontSize', 12, 'FontWeight', 'bold');
+legend({'After background subtraction', 'Before background subtraction (with wall reflections)'}, 'FontSize', 12, 'FontWeight', 'bold', '')
