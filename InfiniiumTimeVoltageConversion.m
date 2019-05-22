@@ -55,20 +55,70 @@ figure(3);
 plot(lags.*dtns_avg, Autocorr, 'LineWidth', 2, 'color', [0.6350, 0.0780, 0.1840]);
 grid on;
 
-xlabel('time(nS)', 'FontSize', 12, 'FontWeight', 'bold');
+xlabel('delay time(nS)', 'FontSize', 12, 'FontWeight', 'bold');
 ylabel('Autocorrelation', 'FontSize', 12, 'FontWeight', 'bold');
 title('Autocorrelation plot of the signal', 'FontSize', 12, 'FontWeight', 'bold');
 
 
-print('Signal_auto', '-depsc');
+% print('Signal_auto', '-depsc');
+
+%% With hann window
+
+hann_ = hanning(N);
+
+signal_new = AmV .* hann_;
+
+[Autocorr, lags] = xcorr(signal_new, signal_new);
+
+figure(4);
+plot(lags.*dtns_avg, Autocorr, 'LineWidth', 2, 'color', [0.6350, 0.0780, 0.1840]);
+grid on;
+
+xlabel('delay time(nS)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('Autocorrelation', 'FontSize', 12, 'FontWeight', 'bold');
+title('Autocorrelation plot of the signal', 'FontSize', 12, 'FontWeight', 'bold');
+
+% Ambiguity Nornalized
+
+%% Autocorrelation:
+
+[Autocorr, lags] = xcorr(AmV, AmV);
+
+figure(5);
+plot(lags.*dtns_avg, Autocorr./max(Autocorr), 'LineWidth', 2, 'color', [0.6350, 0.0780, 0.1840]);
+grid on;
+
+xlabel('delay time(nS)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('Ambiguity normalized', 'FontSize', 12, 'FontWeight', 'bold');
+title('Ambiguity function of the signal', 'FontSize', 12, 'FontWeight', 'bold');
+
+
+% print('Signal_auto', '-depsc');
+
+%% With hann window
+
+hann_ = hanning(N);
+
+signal_new = AmV .* hann_;
+
+[Autocorr, lags] = xcorr(signal_new, signal_new);
+
+figure(6);
+plot(lags.*dtns_avg, Autocorr./max(Autocorr), 'LineWidth', 2, 'color', [0.6350, 0.0780, 0.1840]);
+grid on;
+
+xlabel('delay time(nS)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('Ambiguity normalized', 'FontSize', 12, 'FontWeight', 'bold');
+title('Ambiguity function of the signal', 'FontSize', 12, 'FontWeight', 'bold');
+
+
+
+
+
 
 
 %% ambiguity function:
 
-Fs = 1./(dtns_avg) .* 10^9;
 
-[afmag, delay, doppler] = ambgfun(AmV.', Fs, 1);
-
-contour(delay, doppler, afmag);
 
 

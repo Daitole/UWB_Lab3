@@ -179,6 +179,6 @@ plot(lags.*dt*10^9, Autocorr_wall./max(Autocorr_wall), 'LineWidth', 2, 'color', 
 grid on;
 
 xlabel('time delay(nS)', 'FontSize', 12, 'FontWeight', 'bold');
-ylabel('Autocorrelation', 'FontSize', 12, 'FontWeight', 'bold');
-title('Autocorrelation plot of the signal', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('Ambiguity Normalized', 'FontSize', 12, 'FontWeight', 'bold');
+title('Ambiguity function of the signal', 'FontSize', 12, 'FontWeight', 'bold');
 legend({'After background subtraction', 'Before background subtraction (with wall reflections)'}, 'FontSize', 12, 'FontWeight', 'bold', 'Location', 'south')

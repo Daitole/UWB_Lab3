@@ -33,18 +33,19 @@ xlabel('time(nS)', 'FontSize', 12, 'FontWeight', 'bold');
 ylabel('Signal(mVolt)', 'FontSize', 12, 'FontWeight', 'bold');
 title('Signal in Time Domain', 'FontSize', 12, 'FontWeight', 'bold');
 %legend({'Pulse', 'DUT'}, 'FontSize', 12, 'FontWeight', 'bold');
+grid on;
 print('Signal', '-depsc');
 
 %plot(tns, AmV);
 figure(2);
-plot(freq, abs(AmV_freq(1:N/2+1)).^2./N, 'LineWidth', 2);
+plot(freq, 0.5 .* db(abs(AmV_freq(1:N/2+1)).^2./N), 'LineWidth', 2);
 grid on;
 
 xlabel('Frequencies(GHz)', 'FontSize', 12, 'FontWeight', 'bold');
-ylabel('Signal(mVolt) [Linear Scale]', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('P_{yy}(\mu Watt) [dB Scale]', 'FontSize', 12, 'FontWeight', 'bold');
 title('Power Spectrum M-Sequence Radar', 'FontSize', 12, 'FontWeight', 'bold');
 %legend({'Pulse', 'DUT'}, 'FontSize', 12, 'FontWeight', 'bold');
-print('Signal_f', '-depsc');
+print('Signal_f_db', '-depsc');
 
 %% Autocorrelation:
 
@@ -59,11 +60,29 @@ ylabel('Autocorrelation', 'FontSize', 12, 'FontWeight', 'bold');
 title('Autocorrelation plot of the signal', 'FontSize', 12, 'FontWeight', 'bold');
 
 
-print('Signal_auto', '-depsc');
+% print('Signal_auto', '-depsc');
+
+%% With hann window
+
+hann_ = hanning(N);
+
+signal_new = AmV .* hann_;
+
+[Autocorr, lags] = xcorr(signal_new, signal_new);
+
+figure(4);
+plot(lags.*dtns_avg, Autocorr, 'LineWidth', 2, 'color', [0.6350, 0.0780, 0.1840]);
+grid on;
+
+xlabel('time(nS)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('Autocorrelation', 'FontSize', 12, 'FontWeight', 'bold');
+title('Autocorrelation plot of the signal', 'FontSize', 12, 'FontWeight', 'bold');
+
+
 
 
 %% ambiguity function:
 
-ambg = ambgfun(AmV, )
+
 
 
